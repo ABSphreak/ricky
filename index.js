@@ -36,9 +36,6 @@ bot.on("message", (msg) => {
         return msg.reply("Error! Please define a second argument.");
       }
       break;
-    default:
-      msg.channel.send("You typed something wrong!");
-      break;
   }
 });
 
