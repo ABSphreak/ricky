@@ -35,9 +35,12 @@ bot.on("message", (msg) => {
       if (!args[1]) {
         return msg.reply("Error! Please define a second argument.");
       }
+      break;
     default:
       msg.channel.send("You typed something wrong!");
+      break;
   }
 });
 
+// Logging the bot in
 bot.login(token);
