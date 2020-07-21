@@ -1,43 +1,44 @@
 // For setting up your bot token
 require("dotenv").config();
-const Discord = require("discord.js");
 const token = process.env.TOKEN;
+const Discord = require("discord.js");
+const client = new Discord.Client();
 const PREFIX = "!";
+const fs = require("fs");
+client.commands = new Discord.Collection();
 
-// Initializing Bot Client
-const bot = new Discord.Client();
+// Setting up Discord Command storing/importing system
+const commandFiles = fs
+  .readdirSync("./src/commands")
+  .filter((file) => file.endsWith(".js"));
+for (const file of commandFiles) {
+  const command = require(`./src/commands/${file}`);
+  client.commands.set(command.name, command);
+}
 
 // If the bot is ready then print this message
-bot.on("ready", () => {
-  console.log(`Logged in as → ${bot.user.tag}`);
+client.once("ready", () => {
+  console.log(`Logged in as → ${client.user.tag}`);
 });
 
-bot.on("message", (msg) => {
-  // if (msg.content === "hello") {
-  //   msg.reply("Hello!");
-  // }
-  let args = msg.content.substring(PREFIX.length).split(" ");
-  switch (args[0]) {
+client.on("message", (message) => {
+  // Checking if the message is initialized by PREFIX
+  if (!message.content.startsWith(PREFIX) || message.author.bot) return;
+  const args = message.content.slice(PREFIX.length).split(/ +/);
+  const command = args.shift().toLowerCase();
+
+  switch (command) {
     case "ping":
-      msg.channel.send("pong!");
+      client.commands.get("ping").execute(message, args);
       break;
     case "website":
-      msg.channel.send("https://abhinav.sh/");
+      client.commands.get("website").execute(message, args);
       break;
     case "info":
-      if (args[1] === "version") {
-        msg.channel.send("v1.0.0");
-      } else {
-        msg.channel.send("Invalid Arguments!");
-      }
-      break;
-    case "clear":
-      if (!args[1]) {
-        return msg.reply("Error! Please define a second argument.");
-      }
+      client.commands.get("info").execute(message, args);
       break;
   }
 });
 
 // Logging the bot in
-bot.login(token);
+client.login(token);
