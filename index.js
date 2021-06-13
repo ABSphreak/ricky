@@ -7,6 +7,22 @@ const PREFIX = '!';
 const fs = require('fs');
 client.commands = new Discord.Collection();
 
+const arrStatus = [
+	`${client.guilds.cache.size} servers`,
+	`${client.channels.cache.size} channels`,
+	`${client.users.cache.size} users`,
+	`${client.user.tag} discord bot!`,
+	'!help → All commands',
+];
+
+let index = 0;
+setInterval(() => {
+	if (index === arrStatus.length) index === 0;
+	const status = arrStatus[index];
+	client.user.setActivity(status);
+	index++;
+}, 5000);
+
 // Setting up Discord Command storing/importing system
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
